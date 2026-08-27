@@ -14,6 +14,7 @@ Juego::Juego()
 
     juegoInicializado = false; // Conecta con el TAD asi sabemos que el juego no se ha iniciado
     jugadorActual = nullptr;
+    juegoTerminado = false;
 }
 
 // Estructura lineal auxiliar exclusivamente para definir las fronteras del tablero
@@ -303,7 +304,8 @@ void Juego::InicializarJuego(const string &archivo)
     }
 
     ConfigurarFronteras();              // Se llama a la funcion para configurar las fronteras del juego
-    juegoInicializado = true;           // Si todo esta bien, el juego se inicializa
+    juegoInicializado = true;  
+    juegoTerminado = false;         // Si todo esta bien, el juego se inicializa
     jugadorActual = jugadores.front();  // El primer jugador de la lista va a ser el que tenga el turno inicial
     srand(time(0));                     // Inicializa la semilla para la generación de números aleatorios basada en el tiempo actual
     cout << "(Juego inicializado) El juego ha sido inicializado correctamente." << endl;
@@ -353,6 +355,11 @@ bool Juego ::VerificarGanador(){
 void Juego::ReclamarUnidades(const string& nombreJugador){
     if(!juegoInicializado){
         cout<<"(Juego no inicializado) Esta partida no ha sido inicializada correctamente." << endl;
+        return;
+    }
+
+    if (juegoTerminado){
+        cout << "Este juego ya ha finalizado. " << endl;
         return;
     }
 
@@ -484,6 +491,11 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     // Verificar si el juego está inicializado
     if (!juegoInicializado) {
         cout << "Esta partida no ha sido inicializada correctamente." << endl;
+        return;
+    }
+
+    if (juegoTerminado){
+        cout << "Este juego ya ha finalizado. " << endl;
         return;
     }
     
@@ -626,6 +638,11 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
         return;
     }
 
+    if (juegoTerminado){
+        cout << "(Juego terminado) Esta partida ya tuvo un ganador." << endl;
+        return;
+    }
+
     Jugador *jugadorActualPtr = BuscarJugador(jugador);
     
     if (jugadorActualPtr == nullptr)
@@ -705,7 +722,6 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
     cout << "Comienza el ataque de " << origen->ObtenerNombre() << " contra " << destino->ObtenerNombre() << " (" << defensor->ObtenerNombre() << ")" << endl;
 
     bool continuarAtacando = true;
-    bool atacoAlMenosUnaVez = false; 
 
     while (continuarAtacando && origen->ObtenerUnidades() > 1 && destino->ObtenerUnidades() > 0)
     {
@@ -783,7 +799,7 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
             if (jugadorActualPtr->ObtenerTerritorios().size() == 42)
             {
                 cout << "El jugador " << jugadorActualPtr->ObtenerNombre() << " ha conquistado todos los territorios y ha ganado el juego!" << endl;
-                juegoInicializado = false; // Finaliza el juego
+                juegoTerminado = true; // Finaliza el juego
                 return;
             }
             break; // Sale del bucle de ataque

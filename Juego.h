@@ -29,6 +29,7 @@ class Juego {
         list<Territorio*> territorios; //Indica los territorios en una partida
         Jugador* jugadorActual; // Indica que jugador tiene el turno actual
         bool juegoInicializado; //Esta variable la vamos a usar para saber si el juego ya fue iniciado
+        bool juegoTerminado; //Variable ideal para diferenciar de cuando se inicializo
 
     public:
         Juego(); //Constructor por defecto
@@ -38,9 +39,12 @@ class Juego {
         void FortificarTerritorio(const string& jugador, const string& territorio);
         void CambiarTurno(const string& jugador);
         void EstadoJuego();
+
         bool VerificarGanador();
+
         Jugador* BuscarJugador(const string& nombre);
         Territorio* BuscarTerritorio(const string& nombre);
+        
         void ConfigurarFronteras();
         void ReclamarUnidades(const string& nombreJugador);
 
