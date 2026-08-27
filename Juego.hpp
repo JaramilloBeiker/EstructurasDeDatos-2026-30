@@ -363,11 +363,6 @@ void Juego::ReclamarUnidades(const string& nombreJugador){
         return;
     }
 
-    if (VerificarGanador()) {
-        cout << "(Juego terminado) Esta partida ya tuvo un ganador." << endl;
-        return;
-    }
-
     Jugador* jg = BuscarJugador(nombreJugador);
     if (jg == nullptr) {
         cout << "(Jugador no valido) El jugador " << nombreJugador << " no forma parte de esta partida." << endl;
@@ -457,10 +452,11 @@ void Juego::EstadoJuego(){
         return;
     }
 
-    if (VerificarGanador()) {
-        cout << "(Juego terminado) Esta partida ya tuvo un ganador." << endl;
-        return;
-    }
+    if (juegoTerminado)
+{
+    cout << "(Juego terminado) Esta partida ya tuvo un ganador." << endl;
+    return;
+}
 
     cout<< "Numero de jugadores: "<< jugadores.size()<<endl;
     cout<< "Todos los jugadores: "<<endl;
@@ -547,7 +543,7 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     
     // Verificar que el territorio pertenezca al jugador
     if (territorioOrigen->ObtenerDueño() != jugadorActualObj) {
-        cout << "El territorio " << nombreOrigen << " no pertenece al jugador " << nombreOrigen << "." << endl;
+        cout << "El territorio " << nombreOrigen << " no pertenece al jugador " << jugador << "." << endl;
         return;
     }
     
