@@ -14,8 +14,6 @@ Juego::Juego()
 
     juegoInicializado = false; // Conecta con el TAD asi sabemos que el juego no se ha iniciado
     jugadorActual = nullptr;
-    unidadesUbicadas = false; // Inicializar
-    ataqueRealizado = false;
 }
 
 // Estructura lineal auxiliar exclusivamente para definir las fronteras del tablero
