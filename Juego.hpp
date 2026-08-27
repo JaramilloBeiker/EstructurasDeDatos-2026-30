@@ -14,6 +14,8 @@ Juego::Juego()
 
     juegoInicializado = false; // Conecta con el TAD asi sabemos que el juego no se ha iniciado
     jugadorActual = nullptr;
+    unidadesUbicadas = false; // Inicializar
+    ataqueRealizado = false;
 }
 
 // Estructura lineal auxiliar exclusivamente para definir las fronteras del tablero
@@ -332,9 +334,13 @@ void Juego::CambiarTurno(const string& jugador) {
         if (jugadores[i]->ObtenerNombre() == jugador) {
             size_t siguiente = (i + 1) % jugadores.size();
             jugadorActual = jugadores[siguiente];
+            //Reiniciar cuando se empieza otro turno
+
+            jugadorActual->ReiniciarEstadoTurno();
             return;
         }
     }
+
 }
 
 bool Juego ::VerificarGanador(){
@@ -366,6 +372,11 @@ void Juego::ReclamarUnidades(const string& nombreJugador){
     if(jg !=jugadorActual){
         cout << "(Jugador fuera de turno) No es el turno del jugador " << nombreJugador << "." << endl;
         return;
+    }
+
+    if (jg->ObtenerUnidadesReclamadas()) {
+    cout << "(Unidades ya reclamadas) El jugador " << nombreJugador << " ya ha reclamado sus unidades en este turno." << endl;
+    return;
     }
 
     //Cuando obtienen nuevas unidades de ejercito por Territorios
@@ -431,7 +442,8 @@ void Juego::ReclamarUnidades(const string& nombreJugador){
         unidadesRestantes -= cantidad;
     }
 
-    cout << "(Comando correcto) El jugador " << nombreJugador << " ha terminado de reclamar y ubicar sus unidades." << endl;
+    jg->EstablecerUnidadesReclamadas(true);
+    cout << "(Comando correcto) El jugador " << nombreJugador << " ha terminado de reclamar y ubicar sus unidades." << endl;  
 }
 
 void Juego::EstadoJuego(){
@@ -488,6 +500,11 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     if (jugadorActualObj == nullptr) {
         cout << "El jugador " << jugador << " no forma parte de esta partida." << endl;
         return;
+    }
+
+    if (!jugadorActualObj->ObtenerHaAtacado()) {
+    cout << "(Jugador no ha atacado) El jugador " << jugador << " no ha ejecutado el comando atacar." << endl;
+    return;
     }
     
     //  Verificar que sea el turno del jugador
@@ -612,10 +629,17 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
     }
 
     Jugador *jugadorActualPtr = BuscarJugador(jugador);
+    
     if (jugadorActualPtr == nullptr)
     {
         cout << "(Jugador no válido) El jugador " << jugador << " no existe en la partida." << endl;
         return;
+    }
+
+        //Verificar si ya ubicó unidades para que pueda atacar
+    if (!jugadorActualPtr->ObtenerUnidadesReclamadas()) {
+    cout << "(Jugador no ha ubicado unidades) El jugador " << jugador << " no ha ejecutado el comando obtener_unidades." << endl;
+    return;
     }
 
     if (jugadorActual != jugadorActualPtr)
@@ -683,6 +707,7 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
     cout << "Comienza el ataque de " << origen->ObtenerNombre() << " contra " << destino->ObtenerNombre() << " (" << defensor->ObtenerNombre() << ")" << endl;
 
     bool continuarAtacando = true;
+    bool atacoAlMenosUnaVez = false; 
 
     while (continuarAtacando && origen->ObtenerUnidades() > 1 && destino->ObtenerUnidades() > 0)
     {
@@ -774,5 +799,8 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
             cout << "El jugador " << jugadorActualPtr -> ObtenerNombre() << " ha terminado de atacar\n";
             continuarAtacando = false;
         }
+
+        jugadorActualPtr->EstablecerHaAtacado(true);
+
     }
 }

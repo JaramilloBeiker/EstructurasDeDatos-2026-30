@@ -5,6 +5,8 @@ Jugador::Jugador(const string& nombre, const string& color) {
     this->nombre = nombre;
     this->color = color;
     this->ejercito = 0;
+    this->unidadesReclamadas = false; // Inician en falso
+    this->haAtacado = false;          // Inician en falso
 }
 
 void Jugador::AgregarTerritorio(Territorio* territorio) {
@@ -45,4 +47,25 @@ const list<Territorio*>& Jugador::ObtenerTerritorios() const {
 
 const vector<string>& Jugador::ObtenerCartas() const {
     return cartas;
+}
+
+void Jugador::EstablecerUnidadesReclamadas(bool estado) {
+    unidadesReclamadas = estado;
+}
+
+bool Jugador::ObtenerUnidadesReclamadas() const {
+    return unidadesReclamadas;
+}
+
+void Jugador::EstablecerHaAtacado(bool estado) {
+    haAtacado = estado;
+}
+
+bool Jugador::ObtenerHaAtacado() const {
+    return haAtacado;
+}
+
+void Jugador::ReiniciarEstadoTurno() {
+    unidadesReclamadas = false;
+    haAtacado = false;
 }

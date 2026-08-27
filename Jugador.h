@@ -17,6 +17,9 @@ class Jugador {
         list<Territorio*> territorios; //Indica los territorios que posee el jugador
         vector<string> cartas; // Indica las cartas que posee el jugador
 
+        bool unidadesReclamadas;
+        bool haAtacado;
+
     public:
         Jugador(const string& nombre, const string& color);
         
@@ -30,6 +33,14 @@ class Jugador {
         int ObtenerEjercito() const;
         const list<Territorio*>& ObtenerTerritorios() const;
         const vector<string>& ObtenerCartas() const;
+
+        void EstablecerUnidadesReclamadas(bool estado);
+        bool ObtenerUnidadesReclamadas() const;
+
+        void EstablecerHaAtacado(bool estado);
+        bool ObtenerHaAtacado() const;
+
+    void ReiniciarEstadoTurno();
 };
 
 #endif
