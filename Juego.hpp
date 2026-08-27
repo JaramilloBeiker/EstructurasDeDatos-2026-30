@@ -316,7 +316,7 @@ void Juego::EliminarJugadorDeJuego(Jugador *jugadorAEliminar)
     if (jugadorAEliminar == nullptr)
         return;
 
-    for (int iteliminar = 0; iteliminar < jugadores.size(); iteliminar++)
+    for (size_t iteliminar = 0; iteliminar < jugadores.size(); iteliminar++) //Cambio en el tipo de variable para usar size
     {
         if (jugadores[iteliminar] == jugadorAEliminar)
         {
@@ -719,6 +719,8 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
 
     bool continuarAtacando = true;
 
+    jugadorActualPtr->EstablecerHaAtacado(true);
+
     while (continuarAtacando && origen->ObtenerUnidades() > 1 && destino->ObtenerUnidades() > 0)
     {
         int dadosAtacanteNum = min(3, origen->ObtenerUnidades() - 1); // El atacante puede lanzar hasta 3 dados, pero debe dejar al menos 1 unidad en el territorio
@@ -809,8 +811,6 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
             cout << "El jugador " << jugadorActualPtr -> ObtenerNombre() << " ha terminado de atacar\n";
             continuarAtacando = false;
         }
-
-        jugadorActualPtr->EstablecerHaAtacado(true);
 
     }
 }
