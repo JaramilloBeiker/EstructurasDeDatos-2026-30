@@ -892,10 +892,36 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
             destino->CambiarDueno
             (jugadorActualPtr);
             jugadorActualPtr->AgregarTerritorio(destino);
-            // El atacante debe mover al menos tantas unidades como dados lanzo pero tambien debe dejar al menos 1 unidad en el territorio de origen
-            int tropasParaMover = min(dadosAtacanteNum, origen->ObtenerUnidades() - 1);
-            origen->EliminarUnidades(tropasParaMover);
-            destino->AgregarUnidades(tropasParaMover);
+            // El origen debe conservar al menos una unidad despues de la conquista.
+            int maximoTropasAMover = min(dadosAtacanteNum, origen->ObtenerUnidades() - 1);
+            int tropasParaMover = 0;
+
+            if (maximoTropasAMover > 0)
+            {
+                string mensajeMovimiento = "Ingrese las tropas a mover (1-" + to_string(maximoTropasAMover) + "): ";
+                while (true)
+                {
+                    if (!LeerEnteroConsola(mensajeMovimiento, tropasParaMover))
+                    {
+                        return;
+                    }
+
+                    if (tropasParaMover >= 1 && tropasParaMover <= maximoTropasAMover)
+                    {
+                        break;
+                    }
+
+                    cout << "(Cantidad invalida) Debe mover entre 1 y "
+                         << maximoTropasAMover << " tropas." << endl;
+                }
+
+                origen->EliminarUnidades(tropasParaMover);
+                destino->AgregarUnidades(tropasParaMover);
+            }
+            else
+            {
+                cout << "No hay tropas disponibles para mover; el origen conserva 1 unidad." << endl;
+            }
 
             cout << "Se han movido " << tropasParaMover << " unidades a " << destino->ObtenerNombre() << endl;
 
