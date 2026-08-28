@@ -6,8 +6,30 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
+
+namespace {
+    bool LeerEnteroConsola(const string& mensaje, int& valor) {
+        while (true) {
+            cout << mensaje;
+            string entrada;
+            if (!getline(cin, entrada)) {
+                return false;
+            }
+
+            stringstream flujo(entrada);
+            char caracterExtra;
+            if (flujo >> valor && !(flujo >> caracterExtra)) {
+                return true;
+            }
+
+            cout << "(Entrada inválida) Ingrese un número entero." << endl;
+        }
+    }
+}
 
 Juego::Juego()
 {
@@ -431,9 +453,12 @@ void Juego::ReclamarUnidades(const string& nombreJugador){
 
         cout << "Unidades restantes por asignar: " << unidadesRestantes << endl;
         cout << "Ingrese el codigo del territorio: ";
-        cin >> codigoTerritorio;
-        cout << "Ingrese la cantidad de unidades a asignar: ";
-        cin >> cantidad;
+        if (!getline(cin, codigoTerritorio)) {
+            return;
+        }
+        if (!LeerEnteroConsola("Ingrese la cantidad de unidades a asignar: ", cantidad)) {
+            return;
+        }
 
         Territorio* territorio = BuscarTerritorio(codigoTerritorio);
 
@@ -469,35 +494,89 @@ void Juego::EstadoJuego(){
     return;
 }
 
-    cout<< "Numero de jugadores: "<< jugadores.size()<<endl;
-    cout<< "Todos los jugadores: "<<endl;
-    for(Jugador* j : jugadores){
-        cout<< j->ObtenerNombre()<<"   "<<j->ObtenerColor()<<endl; 
-    }
-    cout<< "Jugador con el turno actual: "<<jugadorActual->ObtenerNombre()<<endl; 
+auto imprimirSeparador = [](int anchoNumero, int anchoNombre, int anchoColor, int anchoTurno) {
+    cout << "+" << string(anchoNumero + 2, '-')
+         << "+" << string(anchoNombre + 2, '-')
+         << "+" << string(anchoColor + 2, '-')
+         << "+" << string(anchoTurno + 2, '-') << "+" << endl;
+};
 
-    cout<<"Territorios: "<<endl; 
-    for(Territorio* t : territorios){
-        cout<<t->ObtenerNombre()<<"  ";
-        if(t->ObtenerDueno
-            ()== nullptr){
-            cout<<"El territorio no tiene Dueno "<<endl;
-        }else{
-            string nombreDueno
-             = t->ObtenerDueno
-            ()->ObtenerNombre();
-            string colorDueno
-             = t->ObtenerDueno
-            ()->ObtenerColor();
+int anchoNombreJugador = static_cast<int>(string("Nombre").size());
+int anchoColorJugador = static_cast<int>(string("Color").size());
+for (Jugador* jugador : jugadores) {
+    anchoNombreJugador = max(anchoNombreJugador,
+                             static_cast<int>(jugador->ObtenerNombre().size()));
+    anchoColorJugador = max(anchoColorJugador,
+                            static_cast<int>(jugador->ObtenerColor().size()));
+}
 
-            cout<<"Dueno: "<< nombreDueno
-             << "Color: "<<colorDueno
-             <<endl;  
-        }
+const int anchoNumero = 3;
+const int anchoTurno = 7;
+const int anchoTablaJugadores = anchoNumero + anchoNombreJugador
+                              + anchoColorJugador + anchoTurno + 10;
 
-        cout<<"Cantidad de unidades: "<<t->ObtenerUnidades()<<" "<<endl;
-        
-    }
+cout << "\n" << string(anchoTablaJugadores, '=') << endl;
+cout << "ESTADO DEL JUEGO" << endl;
+cout << string(anchoTablaJugadores, '=') << endl;
+cout << "Jugadores: " << jugadores.size() << endl;
+imprimirSeparador(anchoNumero, anchoNombreJugador, anchoColorJugador, anchoTurno);
+cout << "| " << left << setw(anchoNumero) << "No." << " "
+     << "| " << setw(anchoNombreJugador) << "Nombre" << " "
+     << "| " << setw(anchoColorJugador) << "Color" << " "
+     << "| " << setw(anchoTurno) << "Turno" << " |" << endl;
+imprimirSeparador(anchoNumero, anchoNombreJugador, anchoColorJugador, anchoTurno);
+
+for (size_t i = 0; i < jugadores.size(); ++i) {
+    Jugador* jugador = jugadores[i];
+    cout << "| " << left << setw(anchoNumero) << i + 1 << " "
+         << "| " << setw(anchoNombreJugador) << jugador->ObtenerNombre() << " "
+         << "| " << setw(anchoColorJugador) << jugador->ObtenerColor() << " "
+         << "| " << setw(anchoTurno)
+         << (jugador == jugadorActual ? "ACTUAL" : "") << " |" << endl;
+}
+imprimirSeparador(anchoNumero, anchoNombreJugador, anchoColorJugador, anchoTurno);
+
+cout << "Turno actual: "
+     << (jugadorActual != nullptr ? jugadorActual->ObtenerNombre() : "ninguno") << endl;
+
+int anchoCodigo = static_cast<int>(string("Codigo").size());
+int anchoTerritorio = static_cast<int>(string("Territorio").size());
+int anchoDueno = static_cast<int>(string("Dueno").size());
+int anchoColor = static_cast<int>(string("Color").size());
+int anchoUnidades = static_cast<int>(string("Unidades").size());
+for (Territorio* territorio : territorios) {
+    Jugador* dueno = territorio->ObtenerDueno();
+    anchoCodigo = max(anchoCodigo, static_cast<int>(territorio->ObtenerCodigo().size()));
+    anchoTerritorio = max(anchoTerritorio, static_cast<int>(territorio->ObtenerNombre().size()));
+    anchoDueno = max(anchoDueno, static_cast<int>(
+        dueno != nullptr ? dueno->ObtenerNombre().size() : string("Sin dueño").size()));
+    anchoColor = max(anchoColor, static_cast<int>(
+        dueno != nullptr ? dueno->ObtenerColor().size() : string("-").size()));
+    anchoUnidades = max(anchoUnidades, static_cast<int>(
+        to_string(territorio->ObtenerUnidades()).size()));
+}
+
+const int anchoTablaTerritorios = anchoCodigo + anchoTerritorio + anchoDueno
+                                + anchoColor + anchoUnidades + 12;
+cout << "\n" << string(anchoTablaTerritorios, '=') << endl;
+cout << "TERRITORIOS" << endl;
+cout << string(anchoTablaTerritorios, '=') << endl;
+cout << "| " << left << setw(anchoCodigo) << "Codigo" << " "
+     << "| " << setw(anchoTerritorio) << "Territorio" << " "
+     << "| " << setw(anchoDueno) << "Dueno" << " "
+     << "| " << setw(anchoColor) << "Color" << " "
+     << "| " << right << setw(anchoUnidades) << "Unidades" << " |" << endl;
+cout << string(anchoTablaTerritorios, '-') << endl;
+
+for (Territorio* territorio : territorios) {
+    Jugador* dueno = territorio->ObtenerDueno();
+    cout << "| " << left << setw(anchoCodigo) << territorio->ObtenerCodigo() << " "
+         << "| " << setw(anchoTerritorio) << territorio->ObtenerNombre() << " "
+         << "| " << setw(anchoDueno) << (dueno != nullptr ? dueno->ObtenerNombre() : "Sin dueño") << " "
+         << "| " << setw(anchoColor) << (dueno != nullptr ? dueno->ObtenerColor() : "-") << " "
+         << "| " << right << setw(anchoUnidades) << territorio->ObtenerUnidades() << " |" << endl;
+}
+cout << string(anchoTablaTerritorios, '=') << endl;
 }
 
 void Juego::FortificarTerritorio(const string& jugador, const string& territorio) {
@@ -605,7 +684,9 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     //  Solicitar selección del territorio destino
     int seleccionDestino;
     cout << "\nSeleccione el número del territorio destino (1-" << vecinosDisponibles.size() << "): ";
-    cin >> seleccionDestino;
+    if (!LeerEnteroConsola("", seleccionDestino)) {
+        return;
+    }
     
     if (seleccionDestino < 1 || seleccionDestino > static_cast<int>(vecinosDisponibles.size())) {
         cout << "(Selección inválida) Opción no válida." << endl;
@@ -618,8 +699,9 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     int maximoUnidades = territorioOrigen->ObtenerUnidades() - 1;
     int unidadesAMover;
     
-    cout << "Cantidad de unidades a mover (1-" << maximoUnidades << "): ";
-    cin >> unidadesAMover;
+    if (!LeerEnteroConsola("Cantidad de unidades a mover (1-" + to_string(maximoUnidades) + "): ", unidadesAMover)) {
+        return;
+    }
     
     if (unidadesAMover < 1 || unidadesAMover > maximoUnidades) {
         cout << "(Cantidad inválida) Debe mover entre 1 y " << maximoUnidades << " unidades." << endl;

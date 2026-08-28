@@ -61,7 +61,7 @@ void procesarEntrada(const vector<string>& palabras_comando, bool& ejecutando, J
             
             if (subcomando == "Inicializar" || subcomando == "inicializar") {
                 cout << "Uso: Inicializar <archivo_inicio.txt>" << endl;
-                cout << "Inicializa el juego a partir de la información contenida en el archivo \"archivo_inicio.txt\" dejando la interfaz del juego lista para recibir los turnos de cada jugador" << endl;
+                cout << "Inicializa el juego a partir de la informacion contenida en el archivo \"archivo_inicio.txt\" dejando la interfaz del juego lista para recibir los turnos de cada jugador" << endl;
             } 
             else if (subcomando == "Obtener_unidades" || subcomando == "obtener_unidades") {
                 cout << "Uso: Obtener_unidades <nombre_jugador>" << endl;
@@ -73,12 +73,12 @@ void procesarEntrada(const vector<string>& palabras_comando, bool& ejecutando, J
             } 
             else if (subcomando == "Fortificar" || subcomando == "fortificar") {
                 cout << "Uso: Fortificar <nombre_jugador>" << endl;
-                cout << "El comando pregunta al jugador los territorios vecinos que desea seleccionar para la fortificación y la cantidad de unidades que se trasladarán de uno al otro." << endl;
+                cout << "El comando pregunta al jugador los territorios vecinos que desea seleccionar para la fortificacion y la cantidad de unidades que se trasladarán de uno al otro." << endl;
             } 
             else if (subcomando == "Estado_juego" || subcomando == "estado_juego") {
                 cout << "Uso: Estado_juego" << endl;
                 cout << "Presenta en pantalla un resumen de la situacion actual del juego mostrando: " << endl;
-                cout << "número de jugadores, nombres y colores de cada uno, jugador con el turno actual y lista de los territorios con el color del jugador que lo controla con la cantidad de unidades que hay ubicadas en cada uno" << endl;
+                cout << "numero de jugadores, nombres y colores de cada uno, jugador con el turno actual y lista de los territorios con el color del jugador que lo controla con la cantidad de unidades que hay ubicadas en cada uno" << endl;
             } 
             else if (subcomando == "Guardar" || subcomando == "guardar") {
                 cout << "Uso: Guardar <nombre_archivo>" << endl;
@@ -94,7 +94,7 @@ void procesarEntrada(const vector<string>& palabras_comando, bool& ejecutando, J
             } 
             else if (subcomando == "Conquista_mas_barata" || subcomando == "conquista_mas_barata") {
                 cout << "Uso: Conquista_mas_barata <nombre_jugador>" << endl;
-                cout << "De todos los territorios posibles, calcula aquel que pueda implicar un menor número de unidades de ejército perdidas." << endl;
+                cout << "De todos los territorios posibles, calcula aquel que pueda implicar un menor numero de unidades de ejército perdidas." << endl;
             } 
             else if (subcomando == "Salir" || subcomando == "salir") {
                 cout << "Uso: Salir" << endl;
