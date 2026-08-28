@@ -3,11 +3,11 @@
 
 using namespace std;
 
-Territorio::Territorio(const string& nombre, const string& codigo, const string& continente, Jugador* dueño, int unidades) {
+Territorio::Territorio(const string& nombre, const string& codigo, const string& continente, Jugador* dueno, int unidades) {
     this->nombre = nombre;
     this->codigo = codigo;
     this->continente = continente;
-    this->dueño = dueño;
+    this->dueno = dueno;
     this->unidades = unidades;
 }
 
@@ -22,8 +22,8 @@ void Territorio::EliminarUnidades(int cantidad) {
     }
 }
 
-void Territorio::CambiarDueño(Jugador* nuevoDueño) {
-    dueño = nuevoDueño;
+void Territorio::CambiarDueno(Jugador* nuevoDueno) {
+    dueno = nuevoDueno;
 }
 
 void Territorio::AgregarVecino(Territorio* vecino) {
@@ -61,8 +61,8 @@ int Territorio::ObtenerUnidades() const {
     return unidades;
 }
 
-Jugador* Territorio::ObtenerDueño() const {
-    return dueño;
+Jugador* Territorio::ObtenerDueno() const {
+    return dueno;
 }
 
 const list<Territorio*>& Territorio::ObtenerTerritoriosAdyacentes() const {

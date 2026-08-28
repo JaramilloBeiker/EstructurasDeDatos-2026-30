@@ -17,7 +17,7 @@ struct JugadorAux {
 // Estructura lineal para llevar el control de los territorios
 struct TerritorioAux {
     string codigo;
-    string colorDueño;
+    string colorDueno;
     int unidades;
 };
 
@@ -132,7 +132,7 @@ int main() {
             int indiceAleatorio = g() % 42;
             
             // Si el territorio elegido pertenece al jugador actual, le ponemos 1 tropa más
-            if (distribucion[indiceAleatorio].colorDueño == jugadores[i].color) {
+            if (distribucion[indiceAleatorio].colorDueno == jugadores[i].color) {
                 distribucion[indiceAleatorio].unidades++;
                 jugadores[i].unidadesDisponibles--;
             }
@@ -168,7 +168,7 @@ int main() {
 
     // Escribir los 42 territorios ocupados
     for (int i = 0; i < 42; i++) {
-        archivoSalida << distribucion[i].codigo << " " << distribucion[i].colorDueño << " " << distribucion[i].unidades << "\n";
+        archivoSalida << distribucion[i].codigo << " " << distribucion[i].colorDueno << " " << distribucion[i].unidades << "\n";
     }
 
     archivoSalida.close();

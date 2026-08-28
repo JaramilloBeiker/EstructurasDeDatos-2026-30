@@ -242,19 +242,24 @@ void Juego::InicializarJuego(const string &archivo)
     { // Va a leer toda la info
 
         conteoTerritorios++;      // Va a contar la cantidad de territorios que hay en el archivo
-        Jugador *dueño = nullptr; // Hay que declararlo dentro para que no se quede con la direccion del jugador anterior
+        Jugador *Dueno
+         = nullptr; // Hay que declararlo dentro para que no se quede con la direccion del jugador anterior
 
         for (Jugador *jugador : jugadores)
         {
             if (jugador->ObtenerColor() == color)
-            { // Va a asociar el color del jugador con el color de ese territorio para saber quien es el dueño
-                dueño = jugador;
-                dueño->AgregarEjercito(unidades); // Revisamos que si hubiese un control
+            { // Va a asociar el color del jugador con el color de ese territorio para saber quien es el Dueno
+
+                Dueno
+                 = jugador;
+                Dueno
+                ->AgregarEjercito(unidades); // Revisamos que si hubiese un control
                 break;
             }
         }
 
-        if (dueño == nullptr)
+        if (Dueno
+             == nullptr)
         {
 
             cout << "(Archivo sin formato) " << archivo << " no contiene información en el formato esperado." << endl;
@@ -278,11 +283,15 @@ void Juego::InicializarJuego(const string &archivo)
             }
         }
 
-        Territorio *territorio = new Territorio(nombreTerritorio, codigoTerritorio, nombreContinente, dueño, unidades);
+        Territorio *territorio = new Territorio(nombreTerritorio, codigoTerritorio, nombreContinente, Dueno
+            , unidades);
         territorios.push_back(territorio); // Se agrega el territorio a la lista de territorios de juego
-        if (dueño != nullptr)
+        if (Dueno
+             != nullptr)
         {
-            dueño->AgregarTerritorio(territorio); // Se agrega el territorio a la lista de territorios del jugador dueño
+            Dueno
+            ->AgregarTerritorio(territorio); // Se agrega el territorio a la lista de territorios del jugador Dueno
+
         }
     }
 
@@ -392,7 +401,8 @@ void Juego::ReclamarUnidades(const string& nombreJugador){
         for (Territorio* t : territorios) {
             if (t->ObtenerContinente() == continente) {
                 totalEnContinente++;
-                if (t->ObtenerDueño() == jg){
+                if (t->ObtenerDueno
+                    () == jg){
                     propiosEnContinente++;
                 }
             }
@@ -427,7 +437,8 @@ void Juego::ReclamarUnidades(const string& nombreJugador){
 
         Territorio* territorio = BuscarTerritorio(codigoTerritorio);
 
-        if (territorio == nullptr || territorio->ObtenerDueño() != jg) {
+        if (territorio == nullptr || territorio->ObtenerDueno
+            () != jg) {
             cout << "Territorio invalido o no pertenece al jugador." << endl;
             continue;
         }
@@ -468,13 +479,20 @@ void Juego::EstadoJuego(){
     cout<<"Territorios: "<<endl; 
     for(Territorio* t : territorios){
         cout<<t->ObtenerNombre()<<"  ";
-        if(t->ObtenerDueño()== nullptr){
-            cout<<"El territorio no tiene dueño"<<endl;
+        if(t->ObtenerDueno
+            ()== nullptr){
+            cout<<"El territorio no tiene Dueno "<<endl;
         }else{
-            string nombreDueño = t->ObtenerDueño()->ObtenerNombre();
-            string colorDueño = t->ObtenerDueño()->ObtenerColor();
+            string nombreDueno
+             = t->ObtenerDueno
+            ()->ObtenerNombre();
+            string colorDueno
+             = t->ObtenerDueno
+            ()->ObtenerColor();
 
-            cout<<"Dueño: "<< nombreDueño << "Color: "<<colorDueño <<endl;  
+            cout<<"Dueno: "<< nombreDueno
+             << "Color: "<<colorDueno
+             <<endl;  
         }
 
         cout<<"Cantidad de unidades: "<<t->ObtenerUnidades()<<" "<<endl;
@@ -542,7 +560,8 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     }
     
     // Verificar que el territorio pertenezca al jugador
-    if (territorioOrigen->ObtenerDueño() != jugadorActualObj) {
+    if (territorioOrigen->ObtenerDueno
+        () != jugadorActualObj) {
         cout << "El territorio " << nombreOrigen << " no pertenece al jugador " << jugador << "." << endl;
         return;
     }
@@ -568,7 +587,8 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     // mostrar solo los que pertenecen al jugador
     for (size_t i = 0; i < vecinos.size(); i++) {
         Territorio* vecino = vecinos[i];
-        if (vecino->ObtenerDueño() == jugadorActualObj) {
+        if (vecino->ObtenerDueno
+            () == jugadorActualObj) {
             vecinosDisponibles.push_back(vecino);
             cout << vecinosDisponibles.size() << ". " << vecino->ObtenerNombre() << " (" 
                  << vecino->ObtenerCodigo() << ") - Unidades: " << vecino->ObtenerUnidades() << endl;
@@ -671,7 +691,8 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
         return;
     }
 
-    if (origen->ObtenerDueño() != jugadorActualPtr)
+    if (origen->ObtenerDueno
+        () != jugadorActualPtr)
     {
         cout << "(Territorio no válido) El territorio " << nombreOrigen << " no pertenece al jugador " << jugador << "." << endl;
         return;
@@ -700,7 +721,8 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
         return;
     }
 
-    if (destino->ObtenerDueño() == jugadorActualPtr)
+    if (destino->ObtenerDueno
+        () == jugadorActualPtr)
     {
         cout << "(Territorio no valido) El territorio " << nombreDestino << " ya pertenece al jugador " << jugador << "." << endl;
         return;
@@ -714,7 +736,8 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
     // fin casos error
 
     // muestra por consola que se va a realizar el ataque y de quien es el territorio que se va a atacar
-    Jugador *defensor = destino->ObtenerDueño();
+    Jugador *defensor = destino->ObtenerDueno
+    ();
     cout << "Comienza el ataque de " << origen->ObtenerNombre() << " contra " << destino->ObtenerNombre() << " (" << defensor->ObtenerNombre() << ")" << endl;
 
     bool continuarAtacando = true;
@@ -779,7 +802,8 @@ void Juego::AtacarTerritorio(const string &jugador, const string &territorio)
             cout << jugadorActualPtr->ObtenerNombre() << "!!! ha conquistado " << destino->ObtenerNombre() << endl;
             // Transferencia de propiedad del territorio
             defensor->EliminarTerritorio(destino);
-            destino->CambiarDueño(jugadorActualPtr);
+            destino->CambiarDueno
+            (jugadorActualPtr);
             jugadorActualPtr->AgregarTerritorio(destino);
             // El atacante debe mover al menos tantas unidades como dados lanzó pero tambien debe dejar al menos 1 unidad en el territorio de origen
             int tropasParaMover = min(dadosAtacanteNum, origen->ObtenerUnidades() - 1);
