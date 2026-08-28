@@ -26,7 +26,7 @@ namespace {
                 return true;
             }
 
-            cout << "(Entrada inválida) Ingrese un número entero." << endl;
+            cout << "(Entrada inválida) Ingrese un numero entero." << endl;
         }
     }
 }
@@ -201,7 +201,7 @@ void Juego::InicializarJuego(const string &archivo)
 
     if (archivoEntrada.peek() == ifstream::traits_type::eof())
     { // Revisamos que si tenga info el archivo
-        cout << "(Archivo vacío) " << archivo << " no contiene información." << endl;
+        cout << "(Archivo vacio) " << archivo << " no contiene informacion." << endl;
         return;
     }
 
@@ -209,7 +209,7 @@ void Juego::InicializarJuego(const string &archivo)
 
     if (!(archivoEntrada >> cantidadJugadores))
     {
-        cout << "(Archivo sin formato) " << archivo << " no contiene información en el formato esperado." << endl;
+        cout << "(Archivo sin formato) " << archivo << " no contiene informacion en el formato esperado." << endl;
         return;
     }
 
@@ -245,7 +245,7 @@ void Juego::InicializarJuego(const string &archivo)
 
         if (!(archivoEntrada >> nombreJugador >> colorJugador))
         { // Condicion para saber si no hay nada de info
-            cout << "(Archivo sin formato) " << archivo << " no contiene información en el formato esperado." << endl;
+            cout << "(Archivo sin formato) " << archivo << " no contiene informacion en el formato esperado." << endl;
             return;
         }
 
@@ -284,7 +284,7 @@ void Juego::InicializarJuego(const string &archivo)
              == nullptr)
         {
 
-            cout << "(Archivo sin formato) " << archivo << " no contiene información en el formato esperado." << endl;
+            cout << "(Archivo sin formato) " << archivo << " no contiene informacion en el formato esperado." << endl;
             return;
         }
 
@@ -338,7 +338,7 @@ void Juego::InicializarJuego(const string &archivo)
     juegoInicializado = true;  
     juegoTerminado = false;         // Si todo esta bien, el juego se inicializa
     jugadorActual = jugadores.front();  // El primer jugador de la lista va a ser el que tenga el turno inicial
-    srand(time(0));                     // Inicializa la semilla para la generación de números aleatorios basada en el tiempo actual
+    srand(time(0));                     // Inicializa la semilla para la generación de numeros aleatorios basada en el tiempo actual
     cout << "(Juego inicializado) El juego ha sido inicializado correctamente." << endl;
 }
 
@@ -625,7 +625,7 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
 
     string nombreOrigen = territorio; //utilizamos esta variable para saber si tenemos un territorio directamente como parametro o tuvimos que cambiarlo
     
-    // Si el territorio viene vacío desde la consola, se lo pedimos al jugador
+    // Si el territorio viene vacio desde la consola, se lo pedimos al jugador
     if (nombreOrigen.empty()) {
         cout << "Ingrese el nombre del territorio desde el cual desea mover unidades: ";
         getline(cin, nombreOrigen);
@@ -683,7 +683,7 @@ void Juego::FortificarTerritorio(const string& jugador, const string& territorio
     
     //  Solicitar selección del territorio destino
     int seleccionDestino;
-    cout << "\nSeleccione el número del territorio destino (1-" << vecinosDisponibles.size() << "): ";
+    cout << "\nSeleccione el numero del territorio destino (1-" << vecinosDisponibles.size() << "): ";
     if (!LeerEnteroConsola("", seleccionDestino)) {
         return;
     }
