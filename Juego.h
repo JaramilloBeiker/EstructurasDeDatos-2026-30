@@ -26,6 +26,7 @@ struct Fronteras
 class Juego {
 
     private:
+        
         vector<Jugador*> jugadores; //Indica los jugadores en una partida
         list<Territorio*> territorios; //Indica los territorios en una partida
         list<Continente> continentes; //Indica los continentes y sus territorios
@@ -53,6 +54,8 @@ class Juego {
         
         void ConfigurarFronteras();
         void ReclamarUnidades(const string& nombreJugador);
+
+        bool DecodificarArchivoComprimido(const string& archivo, string& texto) const;
 
 };
 

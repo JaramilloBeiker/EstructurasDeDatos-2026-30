@@ -39,6 +39,116 @@ namespace {
             cout << "(Entrada inválida) Ingrese un número entero." << endl;
         }
     }
+
+    bool LeerEnteroBinario(ifstream& archivo, int cantidadBytes, long long& valor) {
+        valor = 0;
+        for (int byte = 0; byte < cantidadBytes; ++byte) {
+            char dato;
+            if (!archivo.get(dato)) {
+                return false;
+            }
+            int valorByte = dato;
+            if (valorByte < 0) {
+                valorByte += 256;
+            }
+            if (byte == 7 && valorByte > 127) {
+                return false;
+            }
+            // El archivo guarda los enteros en orden little-endian.
+            valor |= static_cast<long long>(valorByte) << (8 * byte);
+        }
+        return true;
+    }
+}
+
+bool Juego::DecodificarArchivoComprimido(const string& nombreArchivo, string& texto) const {
+    texto.clear();
+    ifstream archivo(nombreArchivo.c_str(), ios::binary);
+    if (!archivo.is_open()) {
+        return false;
+    }
+    // El encabezado indica los símbolos y frecuencias usados para crear el árbol.
+    long long cantidadSimbolos;
+    if (!LeerEnteroBinario(archivo, 2, cantidadSimbolos) ||
+        cantidadSimbolos <= 0 || cantidadSimbolos > 256) {
+        return false;
+    }
+
+    map<char, long long> frecuencias;
+    for (int i = 0; i < cantidadSimbolos; ++i) {
+        char simbolo;
+        long long frecuencia;
+        if (!archivo.get(simbolo) ||
+            !LeerEnteroBinario(archivo, 8, frecuencia) ||
+            frecuencia <= 0 ||
+            frecuencias.find(simbolo) != frecuencias.end()) {
+            return false;
+        }
+
+        frecuencias[simbolo] = frecuencia;
+    }
+
+    long long longitudTexto;
+    if (!LeerEnteroBinario(archivo, 8, longitudTexto) ||
+        longitudTexto <= 0) {
+        return false;
+    }
+
+    // Las frecuencias permiten reconstruir el árbol usado al comprimir.
+    ArbolHuffman arbol(frecuencias);
+    Nodo* raiz = arbol.ObtenerRaiz();
+    if (raiz == 0) {
+        return false;
+    }
+
+    string textoDecodificado;
+    long long caracteresDecodificados = 0;
+    Nodo* nodo = raiz;
+    int paquete = 0;
+    int bitsRestantes = 0;
+
+    // Se lee hasta recuperar la longitud original; los bits finales pueden ser relleno.
+    while (caracteresDecodificados < longitudTexto) {
+        if (bitsRestantes == 0) {
+            char dato;
+            if (!archivo.get(dato)) {
+                return false;
+            }
+            paquete = dato;
+            if (paquete < 0) {
+                paquete += 256;
+            }
+            bitsRestantes = 8;
+        }
+
+        int bit = (paquete >> (bitsRestantes - 1)) & 1;
+        --bitsRestantes;
+
+        if (raiz->EsHoja()) {
+            if (bit != 0) {
+                return false;
+            }
+            nodo = raiz;
+        } else {
+            nodo = bit == 0 ? nodo->ObtenerIzquierdo()
+                            : nodo->ObtenerDerecho();
+            if (nodo == 0) {
+                return false;
+            }
+        }
+
+        if (nodo->EsHoja()) {
+            char simbolo = nodo->ObtenerSimbolo();
+            textoDecodificado += simbolo;
+            ++caracteresDecodificados;
+            // Cada hoja completa un símbolo; el siguiente código empieza en la raíz.
+            nodo = raiz;
+        }
+    }
+
+    // Solo se publica el resultado cuando toda la validación termina correctamente.
+    texto.swap(textoDecodificado);
+    return true;
 }
 
 Juego::Juego()
