@@ -26,6 +26,8 @@ struct Fronteras
 class Juego {
 
     private:
+        void InicializarDesdeTexto(const string& archivo, const string& texto,
+                                   bool validarUnidadesIniciales);
         
         vector<Jugador*> jugadores; //Indica los jugadores en una partida
         list<Territorio*> territorios; //Indica los territorios en una partida

@@ -60,8 +60,9 @@ void procesarEntrada(const vector<string>& palabras_comando, bool& ejecutando, J
             string subcomando = palabras_comando[1];
             
             if (subcomando == "Inicializar" || subcomando == "inicializar") {
-                cout << "Uso: Inicializar <archivo_inicio.txt>" << endl;
-                cout << "Inicializa el juego a partir de la información contenida en el archivo \"archivo_inicio.txt\" dejando la interfaz del juego lista para recibir los turnos de cada jugador" << endl;
+                cout << "Uso: Inicializar <archivo_inicio.txt|archivo_comprimido.bin>" << endl;
+                cout << "Inicializa el juego desde un archivo de texto o restaura un estado comprimido (.bin)." << endl;
+                cout << "Para restaurar: guardar_comprimido <partida.bin> y, en una partida nueva, inicializar <partida.bin>." << endl;
             } 
             else if (subcomando == "Obtener_unidades" || subcomando == "obtener_unidades") {
                 cout << "Uso: Obtener_unidades <nombre_jugador>" << endl;
@@ -112,15 +113,17 @@ void procesarEntrada(const vector<string>& palabras_comando, bool& ejecutando, J
         if (cantidad_palabras == 2) {
             string nombre_archivo = palabras_comando[1];
             bool es_txt = (nombre_archivo.length() >= 4 && nombre_archivo.substr(nombre_archivo.length() - 4) == ".txt");
+            bool es_bin = (nombre_archivo.length() >= 4 && nombre_archivo.substr(nombre_archivo.length() - 4) == ".bin");
             
             if (es_txt) {
-                // LLAMADO REAL A JUEGO
                 juego.InicializarJuego(nombre_archivo);
+            } else if (es_bin) {
+                juego.inicializar(nombre_archivo);
             } else {
-                cout << "(Archivo no valido) El archivo debe tener extension .txt" << endl;
+                cout << "(Archivo no valido) El archivo debe tener extension .txt o .bin" << endl;
             }
         } else {
-            cout << "Uso incorrecto. Sintaxis: inicializar <nombre_archivo.txt>" << endl;
+            cout << "Uso incorrecto. Sintaxis: inicializar <nombre_archivo.txt|nombre_archivo.bin>" << endl;
         }
     }
     else if (comando_principal == "Atacar" || comando_principal == "atacar") {

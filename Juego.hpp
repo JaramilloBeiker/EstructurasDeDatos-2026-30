@@ -277,7 +277,46 @@ void Juego::ConfigurarFronteras()
 
 void Juego::InicializarJuego(const string &archivo)
 {
+    if (juegoInicializado)
+    {
+        cout << "(Juego en curso) El juego ya ha sido inicializado." << endl;
+        return;
+    }
 
+    ifstream archivoEntrada(archivo.c_str());
+    if (!archivoEntrada.is_open())
+    {
+        cerr << "Error: No se pudo abrir el archivo: " << archivo << endl;
+        return;
+    }
+
+    ostringstream contenido;
+    contenido << archivoEntrada.rdbuf();
+    InicializarDesdeTexto(archivo, contenido.str(), true);
+}
+
+void Juego::inicializar(string archivo_inicio)
+{
+    if (juegoInicializado)
+    {
+        cout << "(Juego en curso) El juego ya ha sido inicializado." << endl;
+        return;
+    }
+
+    string texto;
+    if (!DecodificarArchivoComprimido(archivo_inicio, texto))
+    {
+        cerr << "(Archivo comprimido invalido) No se pudo decodificar "
+             << archivo_inicio << "." << endl;
+        return;
+    }
+
+    InicializarDesdeTexto(archivo_inicio, texto, false);
+}
+
+void Juego::InicializarDesdeTexto(const string& archivo, const string& texto,
+                                  bool validarUnidadesIniciales)
+{
     vector<DatosTerritorio> baseTerritorios = {// Este vector nos va a permitir encontrar los datos a partir del codigo del archivo, funciona como una base
                                                {"1.1", "Alaska", "America del Norte"},
                                                {"1.2", "Alberta", "America del Norte"},
@@ -327,12 +366,6 @@ void Juego::InicializarJuego(const string &archivo)
                                                {"6.3", "Nueva Guinea", "Australia"},
                                                {"6.4", "Australia Occidental", "Australia"}};
 
-    if (juegoInicializado)
-    {
-        cout << "(Juego en curso) El juego ya ha sido inicializado." << endl;
-        return;
-    }
-
     // Crear continentes a partir de los nombres ya definidos en baseTerritorios.
     for (const DatosTerritorio &dato : baseTerritorios)
     {
@@ -341,13 +374,7 @@ void Juego::InicializarJuego(const string &archivo)
             continentes.push_back(Continente(dato.continente));
         }
     }
-    ifstream archivoEntrada(archivo);
-
-    if (!archivoEntrada.is_open())
-    {
-        cerr << "Error: No se pudo abrir el archivo: " << archivo << endl;
-        return;
-    }
+    istringstream archivoEntrada(texto);
 
     if (archivoEntrada.peek() == ifstream::traits_type::eof())
     { // Revisamos que si tenga info el archivo
@@ -480,7 +507,8 @@ void Juego::InicializarJuego(const string &archivo)
     for (Jugador *jugador : jugadores)
     {
 
-        if (jugador->ObtenerEjercito() != unidadesPermitidas)
+        if (validarUnidadesIniciales &&
+            jugador->ObtenerEjercito() != unidadesPermitidas)
         {
 
             cout << "(Cantidad de unidades invalida) El jugador " << jugador->ObtenerNombre() << " tiene una cantidad de unidades diferente a la permitida." << endl;
