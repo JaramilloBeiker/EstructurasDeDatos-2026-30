@@ -317,6 +317,20 @@ void Juego::inicializar(string archivo_inicio)
 void Juego::InicializarDesdeTexto(const string& archivo, const string& texto,
                                   bool validarUnidadesIniciales)
 {
+    //agregado para diferenciar si es un archivo de partida guardada o iniciar una partida nueva
+    const string marcadorPartidaGuardada = "# Bandera_Archivo_Guardado:v";
+    string textoEntrada = texto;
+    if (textoEntrada.compare(0, marcadorPartidaGuardada.size(),
+                             marcadorPartidaGuardada) == 0) {
+        size_t finMarcador = textoEntrada.find('\n');
+        if (finMarcador == string::npos) {
+            textoEntrada.clear();
+        } else {
+            textoEntrada.erase(0, finMarcador + 1);
+        }
+        validarUnidadesIniciales = false;
+    }
+
     vector<DatosTerritorio> baseTerritorios = {// Este vector nos va a permitir encontrar los datos a partir del codigo del archivo, funciona como una base
                                                {"1.1", "Alaska", "America del Norte"},
                                                {"1.2", "Alberta", "America del Norte"},
@@ -374,7 +388,7 @@ void Juego::InicializarDesdeTexto(const string& archivo, const string& texto,
             continentes.push_back(Continente(dato.continente));
         }
     }
-    istringstream archivoEntrada(texto);
+    istringstream archivoEntrada(textoEntrada);
 
     if (archivoEntrada.peek() == ifstream::traits_type::eof())
     { // Revisamos que si tenga info el archivo
@@ -749,46 +763,104 @@ for (Territorio* territorio : territorios) {
 cout << string(anchoTablaTerritorios, '=') << endl;
 }
 
-void Juego::guardar_comprimido(string nombre_archivo) {
+string Juego::GenerarTextoPartida() const {
+    ostringstream texto;
+    texto << "# Bandera_Archivo_Guardado:v\n";
+    texto << jugadores.size() << '\n';
+
+    size_t posicionActual = 0;
+    for (size_t i = 0; i < jugadores.size(); ++i) {
+        if (jugadores[i] == jugadorActual) {
+            posicionActual = i;
+            break;
+        }
+    }
+
+    if (!jugadores.empty()) {
+        for (size_t k = 0; k < jugadores.size(); ++k) {
+            Jugador* jugador = jugadores[(posicionActual + k) % jugadores.size()];
+            texto << jugador->ObtenerNombre() << ' '
+                  << jugador->ObtenerColor() << '\n';
+        }
+    }
+
+    for (Territorio* territorio : territorios) {
+        Jugador* dueno = territorio->ObtenerDueno();
+        const string color = dueno != nullptr ? dueno->ObtenerColor() : "sin_dueño";
+        texto << territorio->ObtenerCodigo() << ' '
+              << color << ' '
+              << territorio->ObtenerUnidades() << '\n';
+    }
+
+    return texto.str();
+}
+
+void Juego::GuardarPartida(const string& nombreArchivo) {
+    if (!juegoInicializado) {
+        cout << "(Juego no inicializado) Esta partida no ha sido inicializada correctamente." << endl;
+        return;
+    }
+
+    string nombre = nombreArchivo;
+    if (nombre.size() < 4 || nombre.substr(nombre.size() - 4) != ".txt") {
+        nombre += ".txt";
+    }
+
+    ofstream archivoSalida(nombre.c_str());
+    if (!archivoSalida.is_open()) {
+        cout << "(No se puede guardar) No se pudo crear el archivo: "
+             << nombre << endl;
+        return;
+    }
+
+    archivoSalida << GenerarTextoPartida();
+    if (!archivoSalida.good()) {
+        cout << "(No se puede guardar) Ocurrio un error al escribir en el archivo: "
+             << nombre << endl;
+        return;
+    }
+
+    archivoSalida.close();
+    if (!archivoSalida) {
+        cout << "(No se puede guardar) Ocurrio un error al cerrar el archivo: "
+             << nombre << endl;
+        return;
+    }
+
+    cout << "(Comando correcto) La partida ha sido guardada en "
+         << nombre << "." << endl;
+}
+
+void Juego::GuardarComprimido(const string& nombreArchivo) {
     if (!juegoInicializado) {
         cout << "(Juego no inicializado) No se puede guardar un estado inexistente." << endl;
         return;
     }
 
-    if (nombre_archivo.size() < 4 || nombre_archivo.substr(nombre_archivo.size() - 4) != ".bin") {
-        nombre_archivo += ".bin";
+    string nombre = nombreArchivo;
+    if (nombre.size() < 4 || nombre.substr(nombre.size() - 4) != ".bin") {
+        nombre += ".bin";
     }
 
-    ostringstream textoEstado;
-    textoEstado << jugadores.size() << '\n';
-    for (int i = 0; i < static_cast<int>(jugadores.size()); ++i) {
-        textoEstado << jugadores[i]->ObtenerNombre() << ' '
-                    << jugadores[i]->ObtenerColor() << '\n';
-    }
-    list<Territorio*>::const_iterator territorio;
-    for (territorio = territorios.begin(); territorio != territorios.end(); ++territorio) {
-        Jugador* dueno = (*territorio)->ObtenerDueno();
-        if (dueno == 0) {
+    for (Territorio* territorio : territorios) {
+        if (territorio->ObtenerDueno() == 0) {
             cout << "(Estado invalido) Hay un territorio sin jugador propietario." << endl;
             return;
         }
-        textoEstado << (*territorio)->ObtenerCodigo() << ' '
-                    << dueno->ObtenerColor() << ' '
-                    << (*territorio)->ObtenerUnidades() << '\n';
     }
 
-    string texto = textoEstado.str();
+    string texto = GenerarTextoPartida();
     map<char, long long> frecuencias;
-    for (int i = 0; i < static_cast<int>(texto.size()); ++i) {
-        frecuencias[texto[i]]++;
+    for (char caracter : texto) {
+        frecuencias[caracter]++;
     }
 
     ArbolHuffman arbol(frecuencias);
     const map<char, string>& diccionario = arbol.ObtenerDiccionario();
 
-    ofstream archivoSalida(nombre_archivo.c_str(), ios::binary);
+    ofstream archivoSalida(nombre.c_str(), ios::binary);
     if (!archivoSalida.is_open()) {
-        cerr << "Error: No se pudo crear el archivo: " << nombre_archivo << endl;
+        cerr << "Error: No se pudo crear el archivo: " << nombre << endl;
         return;
     }
 
@@ -813,8 +885,8 @@ void Juego::guardar_comprimido(string nombre_archivo) {
 
     int paquete = 0;
     int bitsEnPaquete = 0;
-    for (int i = 0; i < static_cast<int>(texto.size()); ++i) {
-        map<char, string>::const_iterator codigo = diccionario.find(texto[i]);
+    for (char caracter : texto) {
+        map<char, string>::const_iterator codigo = diccionario.find(caracter);
         if (codigo == diccionario.end()) {
             cerr << "Error: No se encontro el codigo Huffman de un simbolo." << endl;
             return;
@@ -844,7 +916,11 @@ void Juego::guardar_comprimido(string nombre_archivo) {
         return;
     }
 
-    cout << "(Guardado comprimido) Estado guardado en " << nombre_archivo << endl;
+    cout << "(Guardado comprimido) Estado guardado en " << nombre << endl;
+}
+
+void Juego::guardar_comprimido(string nombre_archivo) {
+    GuardarComprimido(nombre_archivo);
 }
 void Juego::FortificarTerritorio(const string& jugador, const string& territorio) {
     

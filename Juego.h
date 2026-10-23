@@ -42,6 +42,9 @@ class Juego {
         void guardar(string nombre_archivo);
         void inicializar(string archivo_inicio);
         void guardar_comprimido(string nombre_archivo);
+        string GenerarTextoPartida() const;
+        void GuardarPartida(const string& nombreArchivo);
+        void GuardarComprimido(const string& nombreArchivo);
         void AtacarTerritorio(const string& jugador, const string& territorio);
         void EliminarJugadorDeJuego(Jugador* jugadorAEliminar);
         void FortificarTerritorio(const string& jugador, const string& territorio);

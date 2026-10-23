@@ -166,15 +166,14 @@ void procesarEntrada(const vector<string>& palabras_comando, bool& ejecutando, J
     }
     else if (comando_principal == "Guardar" || comando_principal == "guardar") {
         if (cantidad_palabras == 2) {
-            // TODO: IMPLEMENTAR METODO REAL -> juego.GuardarPartida(palabras_comando[1]);
-            cout << "(Pendiente implementar) Comando guardar en: " << palabras_comando[1] << endl;
+            juego.GuardarPartida(palabras_comando[1]);
         } else {
             cout << "Uso incorrecto. Sintaxis: guardar <nombre_archivo>" << endl;
         }
     }
     else if (comando_principal == "Guardar_comprimido" || comando_principal == "guardar_comprimido") {
         if (cantidad_palabras == 2) {
-            juego.guardar_comprimido(palabras_comando[1]);
+            juego.GuardarComprimido(palabras_comando[1]);
         } else {
             cout << "Uso incorrecto. Sintaxis: guardar_comprimido <nombre_archivo>" << endl;
         }
